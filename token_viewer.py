@@ -26,23 +26,47 @@ class TokenViewer:
         # 创建主框架
         self.main_frame = ttk.Frame(root)
         self.main_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
-
+        
+        # 创建顶部框架
+        self.top_frame = ttk.Frame(self.main_frame)
+        self.top_frame.pack(fill=tk.X)
+        
+        # 创建折叠按钮框架
+        button_frame = ttk.Frame(self.top_frame)
+        button_frame.pack(fill=tk.X, pady=(0, 10), padx=(0, 5))
+        
+        # 添加折叠/展开按钮
+        self.is_collapsed = False
+        self.toggle_button = ttk.Button(
+            button_frame,
+            text='▼',
+            command=self.toggle_collapse,
+            style='Custom.TButton',
+            bootstyle='success-outline',
+            width=3
+        )
+        self.toggle_button.pack(side=tk.RIGHT)
+        
+        # 创建可折叠内容框架
+        self.collapsible_frame = ttk.Frame(self.top_frame)
+        self.collapsible_frame.pack(fill=tk.X)
+        
         # 创建标题
         title_label = ttk.Label(
-            self.main_frame,
+            self.collapsible_frame,
             text='CRYPTOEYE MONITOR',
             font=('Consolas', 20, 'bold'),
             bootstyle='success'
         )
-        title_label.pack(pady=(0, 20))
+        title_label.pack(side=tk.LEFT, pady=(0, 20), padx=(5, 0))
 
         # 创建输入区域框架
-        input_frame = ttk.Frame(self.main_frame)
-        input_frame.pack(fill=tk.X, pady=(0, 10))
+        self.input_frame = ttk.Frame(self.main_frame)
+        self.input_frame.pack(fill=tk.X, pady=(0, 10))
 
         # Token输入框和添加按钮
         self.entry = ttk.Entry(
-            input_frame,
+            self.input_frame,
             width=20,
             font=('Consolas', 10),
             bootstyle='success'
@@ -54,7 +78,7 @@ class TokenViewer:
         self.entry.bind('<Return>', lambda e: self.add_token())
 
         add_button = ttk.Button(
-            input_frame,
+            self.input_frame,
             text='ADD TOKEN',
             command=self.add_token,
             style='Custom.TButton',
@@ -64,7 +88,7 @@ class TokenViewer:
 
         # 自动刷新选项
         self.auto_refresh = tk.BooleanVar()
-        refresh_frame = ttk.Frame(input_frame)
+        refresh_frame = ttk.Frame(self.input_frame)
         refresh_frame.pack(side=tk.RIGHT, padx=(10, 0), fill=tk.X)
         self.checkbox = ttk.Checkbutton(
             refresh_frame,
@@ -351,6 +375,18 @@ class TokenViewer:
             # 如果系统通知失败，回退到messagebox
             messagebox.showwarning(title, message)
 
+    def toggle_collapse(self):
+        self.is_collapsed = not self.is_collapsed
+        if self.is_collapsed:
+            self.collapsible_frame.pack_forget()
+            self.input_frame.pack_forget()
+            self.toggle_button.configure(text='▲')
+        else:
+            # 确保按照初始化时相同的顺序显示组件
+            self.collapsible_frame.pack(fill=tk.X)
+            self.input_frame.pack(fill=tk.X, pady=(0, 10), after=self.collapsible_frame)
+            self.toggle_button.configure(text='▼')
+            
     def __del__(self):
         self.loop.stop()
         self.loop.close()
