@@ -158,12 +158,12 @@ class TokenViewer:
         # 创建输入框
         ttk.Label(main_frame, text='最高价格警报:', bootstyle='success').pack(pady=10)
         high_price = ttk.Entry(main_frame, bootstyle='success')
-        high_price.insert(0, str(current_alerts['high']))
+        high_price.insert(0, str(current_alerts['high']) if current_alerts['high'] is not None else '')
         high_price.pack(pady=10)
         
         ttk.Label(main_frame, text='最低价格警报:', bootstyle='success').pack(pady=10)
         low_price = ttk.Entry(main_frame, bootstyle='success')
-        low_price.insert(0, str(current_alerts['low']))
+        low_price.insert(0, str(current_alerts['low']) if current_alerts['low'] is not None else '')
         low_price.pack(pady=10)
         
         def save_alerts():
