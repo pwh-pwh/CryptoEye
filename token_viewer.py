@@ -6,6 +6,7 @@ import aiohttp
 import asyncio
 import time
 import threading
+from win10toast import ToastNotifier
 
 class TokenViewer:
     def __init__(self, root):
@@ -274,10 +275,10 @@ class TokenViewer:
             if symbol in self.price_alerts:
                 alerts = self.price_alerts[symbol]
                 if alerts['high'] is not None and current_price >= float(alerts['high']):
-                    messagebox.showwarning('价格警报', f'{symbol} 价格已达到或超过设定的最高价格 ${alerts["high"]}')
+                    self.show_toast_notification(f'{symbol} 价格警报', f'价格已达到或超过设定的最高价格 ${alerts["high"]}')
                     self.price_alerts[symbol] = {'high': None, 'low': None}
                 elif alerts['low'] is not None and current_price <= float(alerts['low']):
-                    messagebox.showwarning('价格警报', f'{symbol} 价格已达到或低于设定的最低价格 ${alerts["low"]}')
+                    self.show_toast_notification(f'{symbol} 价格警报', f'价格已达到或低于设定的最低价格 ${alerts["low"]}')
                     self.price_alerts[symbol] = {'high': None, 'low': None}
             
             values = (
@@ -334,6 +335,21 @@ class TokenViewer:
     def _run_event_loop(self):
         asyncio.set_event_loop(self.loop)
         self.loop.run_forever()
+
+    def show_toast_notification(self, title, message):
+        try:
+            # 创建通知器实例
+            toaster = ToastNotifier()
+            # 显示通知
+            toaster.show_toast(
+                title,
+                message,
+                duration=5,
+                threaded=True
+            )
+        except Exception as e:
+            # 如果系统通知失败，回退到messagebox
+            messagebox.showwarning(title, message)
 
     def __del__(self):
         self.loop.stop()
