@@ -275,8 +275,10 @@ class TokenViewer:
                 alerts = self.price_alerts[symbol]
                 if alerts['high'] is not None and current_price >= float(alerts['high']):
                     messagebox.showwarning('价格警报', f'{symbol} 价格已达到或超过设定的最高价格 ${alerts["high"]}')
+                    self.price_alerts[symbol] = {'high': None, 'low': None}
                 elif alerts['low'] is not None and current_price <= float(alerts['low']):
                     messagebox.showwarning('价格警报', f'{symbol} 价格已达到或低于设定的最低价格 ${alerts["low"]}')
+                    self.price_alerts[symbol] = {'high': None, 'low': None}
             
             values = (
                 symbol,
